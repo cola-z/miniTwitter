@@ -1,1 +1,3 @@
-# miniTwitter
+基于 redis 的一个社交功能的项目
+主要目的是为了学习 redis 以及它的 Java 客户端 jedis
+实现用户的注册，发帖，删帖等功能

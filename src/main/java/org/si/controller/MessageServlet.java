@@ -42,18 +42,22 @@ public class MessageServlet extends HttpServlet {
 		ServletContext ctxt = request.getSession().getServletContext();
 		JedisPool pool = (JedisPool) ctxt.getAttribute("pool");
 		Jedis conn = pool.getResource();
-		if(user != null) {
-			long mid = messageDao.addMessage(conn, user.getUid() + "", message);
-			if(mid > 0) {
-				HttpSession s = request.getSession(false);
-				User u = (User) s.getAttribute("user");
-				int newPosts = u.getPosts() + 1;
-				u.setPosts(newPosts);
-				s.setAttribute("user", u);
+		try {
+			if(user != null) {
+				long mid = messageDao.addMessage(conn, user.getUid() + "", message);
+				if(mid > 0) {
+					HttpSession s = request.getSession(false);
+					User u = (User) s.getAttribute("user");
+					int newPosts = u.getPosts() + 1;
+					u.setPosts(newPosts);
+					s.setAttribute("user", u);
+				}
+				//request.getRequestDispatcher("/WEB-INF/jsp/user.jsp").forward(request, response);
+				request.getRequestDispatcher("user").forward(request, response);
+				//response.sendRedirect(request.getContextPath() + "/user");
 			}
-			//request.getRequestDispatcher("/WEB-INF/jsp/user.jsp").forward(request, response);
-			request.getRequestDispatcher("user").forward(request, response);
-			//response.sendRedirect(request.getContextPath() + "/user");
+		} finally {
+			conn.close();
 		}
 		
 	}
